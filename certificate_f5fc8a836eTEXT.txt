@@ -1,0 +1,112 @@
+QNOS VERIFICATION CERTIFICATE
+==============================================================================
+text            : 'Quantum scars and chiral phonons'
+sha256(text)    : f5fc8a836e98edbad18b4a3c74b2f84305a96a454f14cba0f42cd41bf4329bc8
+physics module  : qnos_physics20262.py  sha256 bbfe982ecab7b1c0...
+environment     : python 3.12.3, numpy 2.4.4, scipy 1.17.1
+settings        : h=0.03, states=220, shuffles=2000
+
+Configuration selected by the text
+  mA       = 1.0
+  mB       = 2.006608
+  phi_l    = 1.098616
+  phi_t    = 0.480025
+  g        = 0.414319
+  neel     = -1
+  k0       = 17.443315
+  sigma    = 0.147021
+  angle    = 350.507271
+  launch   = (1.287882265078628, 0.45836996223611437)
+
+[PHONON]
+  P1  PASS         IDENTITY    Force-matrix structure
+        claim   : Phi(k) Hermitian, Phi(-k)=conj Phi(k), Phi >= 0 (translation invariance), G real antisymmetric.
+        measured: 0  (criterion <= 1e-12)
+  P2  PASS         IDENTITY    Dynamical stability
+        claim   : Hermitian PSD Phi, M>0, antisymmetric G  =>  all w real (max |Re lambda| = 0).
+        measured: 1.862e-15  (criterion <= 1e-08)
+  P3  PASS         IDENTITY    Time-reversal relation (D2)
+        claim   : w_n(k, s) = w_n(-k, -s) for all k, n.
+        measured: 3.553e-15  (criterion <= 1e-09)
+  P4  PASS         CONTROL     Non-reciprocity (T-breaking) and its g=0 null
+        claim   : max_k |w(k)-w(-k)| > 0 at g>0 (effect) while exactly 0 at g=0 (null).
+        measured: 0.1169  (criterion >= 0.001)
+        detail  : effect=0.1169, null at g=0 = 5.77e-15
+  P5  PASS         IDENTITY    Trace sum rule (D3)
+        claim   : sum_j[w_j^2(k)+w_j^2(-k)] = 2 tr(S)(1/mA+1/mB) + 2 g^2 (1/mA^2+1/mB^2), independent of k.
+        measured: 1.944e-15  (criterion <= 1e-10)
+        detail  : RHS=14.620758
+  G1  PASS         CLOSED-FORM Gamma optical doublet vs analytic formula (D1)
+        claim   : w_CCW,CW = (+/- g s (mA-mB) + D)/(2 mA mB); modes are purely circular (|ell| = 1).
+        measured: 1.776e-15  (criterion <= 1e-09)
+        detail  : numeric CCW=2.01294940 CW=1.80510766; closed form CCW=2.01294940 CW=1.80510766; wrong-sign formula would miss by 0.208
+  G2  PASS         CLOSED-FORM Splitting is odd in Neel order and linear in g (D1)
+        claim   : w_CCW - w_CW = g s (1/mB - 1/mA); reverses sign with the Neel order.
+        measured: 1.776e-15  (criterion <= 1e-09)
+        detail  : splitting(s)=+0.20784174, splitting(-s)=-0.20784174, formula=+0.20784174
+  G3  PASS         CLOSED-FORM Inversion asymmetry is required (mA = mB null)
+        claim   : With equal sublattice masses the Gamma doublet stays degenerate for any g.
+        measured: 4.441e-16  (criterion <= 1e-08)
+        detail  : |w3-w2| = 4.44e-16 with mB=mA, g=0.414
+  D1  PASS         DYNAMICS    Mirror covariance of the driven response (D4)
+        claim   : |u(t)| for (pump, s) equals |u(t)| for (-pump, -s).
+        measured: 0  (criterion <= 1e-06)
+        detail  : pump frequency 1.805108 (analytic)
+  D2  PASS         DYNAMICS    Linear response
+        claim   : Doubling the field doubles the displacement.
+        measured: 3.376e-09  (criterion <= 1e-06)
+  D3  PASS         DYNAMICS    Hidden-order readout from circular dichroism
+        claim   : Matched helicity responds more strongly, revealing the sign of the Neel order (needs ratio >= 1.5).
+        measured: 1  (criterion >= 1)
+        detail  : s=+1: decoded +1, dichroic ratio 6.25; s=-1: decoded -1, dichroic ratio 6.25; seeded hidden order was -1
+  D4  PASS         CONTROL     Negative control: broken mirror symmetry
+        claim   : With one bond stiffened by 30% the D1 test must detect a violation (> 1e-3).
+        measured: 0.08995  (criterion >= 0.001)
+        detail  : violation detected: 0.09
+
+[STADIUM]
+  S1  PASS         IDENTITY    Eigenpairs solve the Dirichlet problem
+        claim   : ||H psi_n - E_n psi_n|| / E_n ~ 0 and psi_n orthonormal.
+        measured: 8.409e-14  (criterion <= 1e-09)
+        detail  : residual 8.41e-14, orthonormality 8.88e-16, 7960 cells, 220 states, E in [58.3,246.5]
+  S2  PASS         ASYMPTOTIC  Weyl law for the level count
+        claim   : N(E) = lattice-corrected A-term minus P sqrt(2E)/(4 pi); count in the computed window must match.
+        measured: 0.03491  (criterion <= 0.05)
+        detail  : counted 220, Weyl prediction 212.3 (area 7.1416, perimeter 10.2832)
+  S3  PASS         BOUND       Bessel inequality / basis adequacy
+        claim   : Captured packet weight sum |c_n|^2 <= 1; values far below 1 mean the window misses part of the packet.
+        measured: 0.9105  (criterion <= 1)
+        detail  : captured weight 0.9105
+  S4  PASS         IDENTITY    Unitary time evolution
+        claim   : ||psi(t)||^2 is constant in t.
+        measured: 8.536e-16  (criterion <= 1e-12)
+  S5  PASS         IDENTITY    Closed-form time average = direct quadrature
+        claim   : (1/T) int_0^T |psi(t)|^2 dt equals the sinc-weighted double sum (checked at T=1).
+        measured: 7.602e-15  (criterion <= 1e-08)
+  S6  PASS         BOUND       Convergence to the diagonal ensemble (D5)
+        claim   : || <rho>_T - rho_bar ||_1 <= (2/T) sum_{n!=m} |c_n c_m|/|E_n-E_m| for every T.
+        measured: 0.02283  (criterion <= 1)
+        detail  : error/bound <= 0.023; measured decay exponent -0.92 (bound has -1); min level gap 0.0183
+  S7  DETECTED     STATISTICAL Birthmark: memory of the launch
+        claim   : H0: within energy strata the packet weights are unrelated to the eigenstates' structure. Two statistics (local enhancement B, global TV distance), Bonferroni alpha=0.01.
+        measured: 0.0004998  (criterion <= 0.005)
+        detail  : local enhancement B=1.11 (null 1.01+/-0.02, z=5.1, p=0.0005); TV=0.073 (null 0.033+/-0.002, p=0.0005); N_eff=116.6; 2000 stratified shuffles
+  S9  PASS         CONTROL     Calibration of the birthmark test (type-I error)
+        claim   : Under a true null the test must not cry wolf: false-positive rate at alpha=0.05 stays <= 20% (binomial 99% limit for 30 trials).
+        measured: 0.1  (criterion <= 0.2)
+        detail  : 3/30 false positives
+  S8  PASS         ASYMPTOTIC  Grid convergence (6 lowest levels)
+        claim   : Successive refinements h, h/2, h/4 change the eigenvalues by less and less.
+        measured: 6  (criterion >= 5)
+        detail  : 6/6 levels converge; median observed order 2.75; E1 = 1.58221 (h/4)
+
+SUMMARY
+  passed 20, failed none, not applicable none
+  statistical verdicts: {'S7': 'DETECTED'}
+  certificate digest: efaf88c739843a77a991f1886f590d3f421fc20c72b7b1b0edc2bf3965ebf049
+
+INTERPRETATION LIMITS
+  * These are numerical verifications at one text-selected parameter point, not formal proofs.
+  * The phonon model is a minimal lattice-dynamics model, not an ab-initio material calculation.
+  * 'DETECTED' / 'NOT DETECTED' is a hypothesis-test outcome; both are valid results.
+  * Run several different texts: IDENTITY / CLOSED-FORM / BOUND claims must pass for every one.
