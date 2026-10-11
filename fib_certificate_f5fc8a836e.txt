@@ -1,0 +1,171 @@
+QNOS FIBONACCI LAB -- VERIFICATION CERTIFICATE
+==============================================================================
+text            : 'Quantum scars and chiral phonons'
+sha256(text)    : f5fc8a836e98edbad18b4a3c74b2f84305a96a454f14cba0f42cd41bf4329bc8
+program sha256  : 0590e7708440e289...
+environment     : python 3.12.3, numpy 2.4.4, scipy 1.17.1, mesher skimage
+runtime         : 121.1 s
+
+Configuration selected by the text
+  mA       = 1.0
+  mB       = 2.006608
+  phi_l    = 1.098616
+  phi_t    = 0.480025
+  g        = 0.414319
+  neel     = -1
+  k0       = 17.443315
+  sigma    = 0.147021
+  angle    = 350.507271
+  launch   = (1.287882265078628, 0.45836996223611437)
+
+[PHONON]
+  P1  PASS         IDENTITY    Force-matrix structure
+        claim   : Phi(k) Hermitian, Phi(-k)=conj Phi(k), Phi >= 0, G real antisymmetric.
+        measured: 0  (criterion <= 1e-12)
+  P2  PASS         IDENTITY    Dynamical stability
+        claim   : all w real (max |Re lambda| = 0).
+        measured: 1.332e-15  (criterion <= 1e-08)
+  P3  PASS         IDENTITY    Time-reversal relation (D2)
+        claim   : w_n(k, s) = w_n(-k, -s).
+        measured: 3.775e-15  (criterion <= 1e-09)
+  P4  PASS         CONTROL     Non-reciprocity and its g=0 null
+        claim   : max_k |w(k)-w(-k)| > 0 at g>0, exactly 0 at g=0.
+        measured: 0.09421  (criterion >= 0.001)
+        detail  : effect=0.09421, null=3.55e-15
+  G1  PASS         CLOSED-FORM Gamma optical doublet vs analytic formula (D1)
+        claim   : w_CCW,CW = (+/- g s (mA-mB) + D)/(2 mA mB); modes purely circular.
+        measured: 1.776e-15  (criterion <= 1e-09)
+        detail  : CCW=2.01294940 CW=1.80510766; wrong-sign formula would miss by 0.208
+  G2  PASS         CLOSED-FORM Splitting odd in Neel order, linear in g (D1)
+        claim   : w_CCW - w_CW = g s (1/mB - 1/mA).
+        measured: 1.776e-15  (criterion <= 1e-09)
+        detail  : splitting(s)=+0.20784174 formula=+0.20784174
+  G3  PASS         CLOSED-FORM Inversion asymmetry required (mA = mB null)
+        claim   : With mA = mB the Gamma doublet stays degenerate.
+        measured: 4.441e-16  (criterion <= 1e-08)
+  N1  PASS         DYNAMICS    Batch RK4 agrees with scipy DOP853 (Fibonacci-word drive)
+        claim   : Two independent integrators give the same trajectory (limit set by table interpolation in the reference).
+        measured: 3.546e-06  (criterion <= 1e-05)
+  E1  PASS         DYNAMICS    Power theorem: work in = dissipated + stored (six modulations)
+        claim   : W_in - W_diss - E_final = 0 (gyroscopic force does no work); residual is RK4 error, largest at the Cantor gate edges.
+        measured: 1.934e-06  (criterion <= 1e-05)
+        detail  : worst cantor
+  M1  PASS         DYNAMICS    Mirror covariance holds for every modulation (D4)
+        claim   : Absorbed energy and amplitude of (pump, s) equal those of (-pump, -s) for ANY phase th(t).
+        measured: 0  (criterion <= 1e-09)
+  L1  PASS         DYNAMICS    Linear response under modulation
+        claim   : E0 x2 => amplitude x2, absorbed energy x4.
+        measured: 0  (criterion <= 1e-09)
+  R1  PASS         DYNAMICS    Hidden-order readout, CW reference pump
+        claim   : Matched helicity absorbs more; decoded sign equals the Neel order (ratio >= 1.5).
+        measured: 1  (criterion >= 1)
+        detail  : s=+1: decoded +1, dichroic ratio 89.35; s=-1: decoded -1, dichroic ratio 89.35; seeded order -1; Gamma splitting 0.208
+  C1  PASS         CONTROL     Null control: no spin-phonon coupling => no dichroism
+        claim   : At g=0 sigma+ and sigma- are absorbed equally for every modulation.
+        measured: 0  (criterion <= 1e-09)
+  C2  PASS         CONTROL     Negative control: broken mirror symmetry
+        claim   : One bond stiffened by 30%: the time-resolved M1 comparison must now detect a violation (> 1e-3).
+        measured: 0.4241  (criterion >= 0.001)
+        detail  : violation 0.424
+
+[MODULATION]
+  F1  PASS         IDENTITY    Fibonacci word: length F(n+2), counts F(n+1) A and F(n) B
+        claim   : Substitution A->AB, B->A gives exact Fibonacci counts; letter density -> 1/phi.
+        measured: 0  (criterion <= 0)
+        detail  : n=12: len 377, A 233, B 144; density error vs 1/phi = 3.15e-06
+  F2  PASS         BOUND       Fibonacci word has bounded discrepancy (quasi-periodic, not random)
+        claim   : | #A(first N letters) - N/phi | < 1 for every prefix.
+        measured: 0.6161  (criterion <= 1)
+        detail  : max discrepancy 0.6161 over 377 prefixes
+  F3  PASS         ASYMPTOTIC  Cantor gate has box dimension ln2/ln3
+        claim   : Box counting of the gate recovers the exact fractal dimension 0.6309.
+        measured: 1.11e-16  (criterion <= 1e-06)
+        detail  : measured 0.630930
+  F4  PASS         BOUND       Golden two-tone drive is not periodic
+        claim   : Normalised autocorrelation at lags > 10 stays below 1 (a periodic drive would return to 1).
+        measured: 0.9584  (criterion <= 0.999)
+        detail  : max |autocorr| at lag>10: 0.9584
+
+[STADIUM]
+  S1  PASS         IDENTITY    Eigenpairs solve the Dirichlet problem
+        claim   : ||H psi - E psi||/E ~ 0, psi orthonormal.
+        measured: 9.81e-14  (criterion <= 1e-09)
+        detail  : residual 9.81e-14, orthonormality 8.88e-16, 7960 cells, 220 states
+  S2  PASS         ASYMPTOTIC  Weyl law for the level count
+        claim   : Counted levels match the lattice Weyl law.
+        measured: 0.03491  (criterion <= 0.05)
+        detail  : counted 220, predicted 212.3
+  S3  PASS         BOUND       Bessel inequality / basis adequacy
+        claim   : Captured packet weight <= 1.
+        measured: 0.9105  (criterion <= 1)
+        detail  : captured weight 0.9105
+  S4  PASS         IDENTITY    Unitary driven evolution (six modulations)
+        claim   : ||psi(t)||^2 conserved under every Fibonacci / fractal drive.
+        measured: 2.578e-13  (criterion <= 1e-10)
+  S5  PASS         ASYMPTOTIC  Strang splitting is second order
+        claim   : Halving dt cuts the error ~4x (order ~2).
+        measured: 2.325  (criterion >= 1.7)
+        detail  : dt=0.016,0.008 vs 0.004: errors 2.61e-04, 5.20e-05, order 2.32
+  S6  PASS         DYNAMICS    Weak-drive energy response is linear in eps (coherent packet)
+        claim   : Doubling eps doubles dE: a packet is a superposition, so <H0> responds at first order (eps^2 would apply to an eigenstate).
+        measured: 0.004023  (criterion <= 0.03)
+        detail  : dE(0.02)=-1.354e-02, dE(0.04)=-2.719e-02, ratio 2.008 (linear = 2, quadratic = 4)
+  S7  PASS         BOUND       Convergence to the diagonal ensemble (D5)
+        claim   : || <rho>_T - rho_bar ||_1 <= (2/T) sum |c_n c_m|/|E_n-E_m|.
+        measured: 0.02283  (criterion <= 1)
+        detail  : max error/bound 0.023
+  S8  DETECTED     STATISTICAL Birthmark: memory of the launch (undriven)
+        claim   : H0: within energy strata packet weights are unrelated to eigenstate structure; Bonferroni alpha=0.01.
+        measured: 0.0004998  (criterion <= 0.005)
+        detail  : B=1.11 (null 1.01+/-0.02, z=5.1, p=0.0005); TV=0.073 (null 0.033, p=0.0005); 2000 stratified shuffles
+  S9  PASS         CONTROL     Calibration of the birthmark test (type-I error)
+        claim   : Under a true null the false-positive rate at alpha=0.05 stays <= 25%.
+        measured: 0.125  (criterion <= 0.25)
+        detail  : 3/24 false positives
+  S10 PASS         ASYMPTOTIC  Grid convergence (6 lowest levels)
+        claim   : Eigenvalues change less on each refinement.
+        measured: 6  (criterion >= 5)
+        detail  : 6/6 converge; median order 2.75
+  S11 NOT DETECTED STATISTICAL Fibonacci-word FM vs equal-depth chirp: same heating?
+        claim   : H0: mean over 55 Vogel-lattice launches of dE(fibword) - dE(chirp) = 0 (paired sign-flip test, alpha=0.01).
+        measured: 0.8311  (criterion <= 0.01)
+        detail  : mean dE fib +0.0894, chirp +0.2077, paired diff -0.1183, p=0.8311; carrier w0=10.375, depth m=0.15, rms(s): fib 0.786 vs chirp 0.362
+
+SUMMARY
+  passed 27, failed none, not applicable none
+  statistical verdicts: {'S8': 'DETECTED', 'S11': 'NOT DETECTED'}
+  certificate digest: c9c01040e240db28624086366a142baea4f87e201112c418e4bcc8dd8cd4d52f
+
+FINDINGS (measurements of the model, generated from the numbers above)
+  PHONON: dichroic readout of the hidden Neel order (contrast C = (A+ - A-)/(A+ + A-), readout threshold C = 0.20)
+  CW (reference)             C(m=0)=-0.978  C(m_max)=-0.978  stays above threshold over the whole sweep; sign preserved at 13/13 depths
+  linear chirp               C(m=0)=-0.978  C(m_max)=-0.439  stays above threshold over the whole sweep; sign preserved at 13/13 depths
+  Fibonacci word FM          C(m=0)=-0.978  C(m_max)=-0.976  stays above threshold over the whole sweep; sign preserved at 13/13 depths
+  golden quasi-periodic FM   C(m=0)=-0.978  C(m_max)=-0.352  stays above threshold over the whole sweep; sign preserved at 13/13 depths
+  fractal Weierstrass FM     C(m=0)=-0.978  C(m_max)=+0.174  first drops below threshold at m=0.167; sign preserved at 8/13 depths
+  Cantor-gated               C(m=0)=-0.685  C(m_max)=-0.685  stays above threshold over the whole sweep; sign preserved at 13/13 depths
+  PHONON: dichroism spectrum (carrier sweep at fixed small depth)
+  CW (reference)             max C=+0.980 at w=2.022, min C=-0.979 at w=1.796   (branches: CCW 2.013, CW 1.805)
+  linear chirp               max C=+0.978 at w=2.022, min C=-0.977 at w=1.796   (branches: CCW 2.013, CW 1.805)
+  Fibonacci word FM          max C=+0.980 at w=2.022, min C=-0.979 at w=1.796   (branches: CCW 2.013, CW 1.805)
+  golden quasi-periodic FM   max C=+0.971 at w=2.022, min C=-0.970 at w=1.796   (branches: CCW 2.013, CW 1.805)
+  fractal Weierstrass FM     max C=+0.976 at w=2.022, min C=-0.973 at w=1.796   (branches: CCW 2.013, CW 1.805)
+  Cantor-gated               max C=+0.869 at w=2.097, min C=-0.837 at w=1.721   (branches: CCW 2.013, CW 1.805)
+  SCAR: heating, memory and fractal structure at the dipole-resonant carrier
+  CW (reference)             integrated |dE| over carrier sweep = 1.00 x CW | B at depth m=0.15: 1.09 (undriven same window 1.12) | TV 0.064 | ridge box-dimension 1.41
+  linear chirp               integrated |dE| over carrier sweep = 0.66 x CW | B at depth m=0.15: 1.11 (undriven same window 1.12) | TV 0.061 | ridge box-dimension 1.42
+  Fibonacci word FM          integrated |dE| over carrier sweep = 0.99 x CW | B at depth m=0.15: 1.09 (undriven same window 1.12) | TV 0.064 | ridge box-dimension 1.43
+  golden quasi-periodic FM   integrated |dE| over carrier sweep = 0.95 x CW | B at depth m=0.15: 1.09 (undriven same window 1.12) | TV 0.062 | ridge box-dimension 1.41
+  fractal Weierstrass FM     integrated |dE| over carrier sweep = 0.83 x CW | B at depth m=0.15: 1.10 (undriven same window 1.12) | TV 0.060 | ridge box-dimension 1.38
+  Cantor-gated               integrated |dE| over carrier sweep = 0.18 x CW | B at depth m=0.15: 1.12 (undriven same window 1.12) | TV 0.074 | ridge box-dimension 1.42
+  undriven reference               TV 0.076 | ridge box-dimension 1.45
+  SCAR ATLAS on 55 golden-angle launch points: Fibonacci-word vs chirp heating -> no significant difference (p=0.8311); mean B under fibword 1.19, chirp 1.19, undriven 1.23
+  NOTE: depth m is the PEAK fractional detuning; waveforms differ in rms detuning, so they differ in effective bandwidth.
+      rms(s) = cw 0.00, chirp 0.36, fibword 0.79, golden_qp 0.50, fractal_wm 0.49, cantor 0.00
+
+INTERPRETATION LIMITS
+  * Numerical verification at one text-selected parameter point, not formal proof.
+  * Minimal lattice-dynamics model and a projected dipole drive; not an ab-initio material calculation.
+  * The scar drive acts inside the computed eigenbasis window (captured weight reported in S3); results describe that projection.
+  * 'DETECTED' / 'NOT DETECTED' are hypothesis-test outcomes; both are valid results.
+  * Run several texts: IDENTITY / CLOSED-FORM / BOUND claims must pass for every one.
